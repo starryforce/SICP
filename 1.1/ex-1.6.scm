@@ -1,9 +1,39 @@
 #lang sicp
 
-(define (iff <p> <c> <a>) (if <p> <c> <a>))
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+        (else else-clause)))
 
-(define (tryif a) (if (= a 0) 1 (/ 1 0)))
+(define (sqrt-iter guess x)
+  (new-if (good-enough? guess x)
+      guess
+      (sqrt-iter (improve guess x)
+                 x)))
 
-(define (tryiff a) (iff (= a 0) 1 (/ 1 0)))
+(cond ((good-enough? guess x) guess)
+      (else (sqrt-iter (improve guess x)
+                       x)))
 
-(tryiff 0)
+(define (improve guess x)
+  (average guess (/ x guess)))
+
+(define (average x y)
+  (/ (+ x y) 2))
+
+(define (good-enough? guess x)
+  (< (abs (- (square guess) x)) 0.001))
+
+(define (square x)
+  (* x x))
+
+(define (sqrt x)
+  (sqrt-iter 1.0 x))
+
+(sqrt 9)
+
+
+
+(new-if (= 2 3) 0 5)
+
+(new-if (= 1 1) 0 5)
+
