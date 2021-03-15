@@ -1,6 +1,6 @@
 #lang sicp
 
-;; process iterative
+;; process recursive 
 (define (+ a b)
   (if (= a 0)
       b
@@ -20,7 +20,7 @@
 
 
 
-;;; process recursive
+;;; process iterative
 (define (+ a b)
   (if (= a 0)
       b
