@@ -1,4 +1,4 @@
-#lang sicp
+#lang simply-scheme
 
 #| Exercise 1.1:
 Below is a sequence of expressions.

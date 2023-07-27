@@ -1,4 +1,4 @@
-#lang sicp
+#lang simply-scheme
 
 ; Translate the following expression into prefix form:
 
