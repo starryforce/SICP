@@ -28,3 +28,9 @@
 (define (newtons-method g guess)
   (fixed-point (newton-transform g) 
                guess))
+
+(define (cubic a b c)
+  (lambda (x) (+ (* x x x) (* a x x) (* b x) c)))
+
+
+(newtons-method (cubic 5 -14 0) -1)
