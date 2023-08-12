@@ -21,14 +21,12 @@
   ; [Number -> Number] [Number -> Number] Number Number -> Number
   ; calculate k-term finite continued fraction
   ; accumulator a is term build from k to k0
-  (define (cont-frac-iter n d k a)
+  (define (cont-frac-iter k a)
     (cond ((= k 0) a)
-          (else (cont-frac-iter n
-                                d
-                                (- k 1)
+          (else (cont-frac-iter (- k 1)
                                 (/ (n k)
                                    (+ (d k) a))))))
-  (cont-frac-iter n d k0 0))
+  (cont-frac-iter k0 0))
 
 (cont-frac-i (lambda (i) 1.0)
              (lambda (i) 1.0)

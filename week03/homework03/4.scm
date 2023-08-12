@@ -1,0 +1,19 @@
+#lang simply-scheme
+
+(define (expt b n) 
+  (expt-iter b n 1))
+
+(define (expt-iter b counter product)
+  (if (= counter 0)
+      product
+      (expt-iter b
+                 (- counter 1)
+                 (* b product))))
+
+; the relationship between
+; - b
+; - n
+; - counter
+; - product
+
+; (log b product) + counter = n

@@ -4,7 +4,7 @@
 ; according to the definition of fixed point
 ; x↦1+1/x 's fixed point x = 1 + 1/x
 ; both sides multiply x.
-; x2 = x + 1
+; x^2 = x + 1
 
 (define tolerance 0.00001)
 
