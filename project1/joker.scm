@@ -31,7 +31,7 @@
 (define (make-ordered-deck)
   (define (make-suit s)
     (every (lambda (rank) (word rank s)) '(a 2 3 4 5 6 7 8 9 10 j q k)) )
-  (se (make-suit 'h) (make-suit 's) (make-suit 'd) (make-suit 'c)) )
+  (se (make-suit 'h) (make-suit 's) (make-suit 'd) (make-suit 'c) 'joker 'joker) )
 
 (define (make-deck)
   (define (shuffle deck size)
@@ -42,7 +42,7 @@
     (if (= size 0)
         deck
         (move-card deck '() (random size)) ))
-  (shuffle (make-ordered-deck) 52) )
+  (shuffle (make-ordered-deck) 54) )
 
 ; Word -> Number
 ; get card's point
@@ -152,5 +152,5 @@
   (lambda (s w)
     (st (bl s) w)))
 
-(play-n valentine 10000)
-(play-n (reckless valentine) 10000)
+;(play-n valentine 10000)
+;(play-n (reckless valentine) 10000)

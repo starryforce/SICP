@@ -2,12 +2,9 @@
 
 
 (define (for-each fn l)
-  (define (inner l)
-    (cond ((null? l) '())
-          (else (fn (car l))
-                (inner (cdr l)))))
-  (inner l)
-  #t)
+  (cond ((null? l) #t)
+        (else (fn (car l))
+              (for-each fn (cdr l)))))
         
 
 (for-each 
