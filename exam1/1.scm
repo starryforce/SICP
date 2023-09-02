@@ -15,7 +15,8 @@
 
 
 ; (cons (list 1 2) (cons 3 4))
-; '((1 2) 3 4)
+; '((1 2) 3 4) -> (cons (list 1 2) (cons 3 (cons 4 '())))
+; the correct answer is '((1 2) .
 
 ; (let ((p (list 4 5)))
 ;   (cons (cdr p) (cddr p)) )
