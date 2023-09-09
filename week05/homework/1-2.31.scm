@@ -6,9 +6,9 @@
 
 (define (tree-map fn tree)
   (cond ((null? tree) '())
-        ((pair? tree) (cons (square-tree (car tree))
-                            (square-tree (cdr tree))))
-        (else (tree-map fn tree))))
+        ((not (pair? tree)) (fn tree))
+        (else (cons (tree-map fn (car tree))
+                    (tree-map fn (cdr tree))))))
 
 (define (square-tree tree) 
   (tree-map square tree))
@@ -20,10 +20,9 @@
               '(1 (4 (9 16) 25) (36 49)))
 
 (define (tree-map-1 fn tree)
-  (map (lambda (x) (if (number? x)
-                       (fn x)
-                       (tree-map-1 fn x)))
-       tree))
+  (if (not (pair? tree))
+      (fn tree)
+      (map (lambda (sub) (tree-map-1 fn sub)) tree)))
 
 (define (square-tree-map tree)
   (tree-map-1 square tree))

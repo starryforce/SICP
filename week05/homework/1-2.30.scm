@@ -17,11 +17,11 @@
               '(1 (4 (9 16) 25) (36 49)))
 
 
+; Number | Tree -> Number | Tree
 (define (square-tree-map tree)
-  (map (lambda (x) (if (number? x)
-                       (square x)
-                       (square-tree-map x)))
-       tree))
+  (if (number? tree)
+      (square tree)
+      (map square-tree-map tree)))
 
 (check-equal? (square-tree-map
                (list 1

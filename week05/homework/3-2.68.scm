@@ -101,3 +101,7 @@
           (error "the symbol is not in the tree"))))
 
 (check-equal? (encode sample-code sample-tree) sample-message)
+
+; n
+
+; (/ (* n n) 2)
