@@ -17,8 +17,3 @@
       (lambda (frame)
         (paint-bottom frame)
         (paint-top frame)))))
-
-
-(define (below-1 painter1 painter2)
-  
-      

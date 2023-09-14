@@ -9,7 +9,6 @@
 (define (edge1-frame frame) (cadr frame))
 (define (edge2-frame frame) (cddr frame))
 
-
 (define ex (make-frame 1 2 3))
 (check-equal? (origin-frame ex) 1)
 (check-equal? (edge1-frame ex) 2)

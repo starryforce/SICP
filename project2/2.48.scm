@@ -9,7 +9,6 @@
 (define (xcor-vect v) (car v))
 (define (ycor-vect v) (cdr v))
 
-
 (define (make-segment start end)
   (cons start end))
 ; A Segement is a Pair:
