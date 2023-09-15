@@ -76,10 +76,13 @@
 ; '(and (> 3 2) (< 4 7) 10)
 ; '(and (> 3 5) (< 4 7) 10)
 ; '(and 10 (> 3 2) (< 4 7))
-(define (handle-and l)
-  (if (eval-1 (car l))
-      (if (null? (cdr l)) (eval-1 (car l)) (handle-and (cdr l)))
-      #f))
+(define (handle-and subexps)
+  (if (null? subexps)
+      #t
+      (let ((result (eval-1 (car subexps))))
+        (if result
+            (if (null? (cdr subexps)) result (handle-and (cdr subexps)))
+            #f))))
 
 ;; Comments on APPLY-1:
 
