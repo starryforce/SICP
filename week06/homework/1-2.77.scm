@@ -1,6 +1,6 @@
 #lang simply-scheme
 
-(define z (cons 'complex ))
+(define z '(complex rectangular 3 . 4))
 
 (magnitude z)
 (apply-generic 'magnitude z)
@@ -12,8 +12,8 @@
 ; remove the outer symbol
 ; the new application is (apply magnitude '((cons 'rectangular  (cons 3 4))))
 
-(magnitude (cons 'rectangular  (cons 3 4)))
-(apply-generic magnitude (cons 'rectangular  (cons 3 4)))
+(magnitude '(rectangular 3 . 4))
+(apply-generic 'magnitude '(rectangular 3 . 4))
 ; (get 'magnitude '(rectangular))
 
 ; inner

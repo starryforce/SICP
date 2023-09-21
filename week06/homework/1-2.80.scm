@@ -12,6 +12,6 @@
                       (not (= (denom x) 0)))))
 
 ; ... install-complex-package ...
-(put '=zero? '(complex complex)
+(put '=zero? '(complex)
      (lambda (z) (and (= (real-part z) 0)
                       (= (imag-part z) 0))))
