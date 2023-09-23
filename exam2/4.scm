@@ -4,13 +4,15 @@
 
 (define (make-tree a b)
   (cons a b))
-(define (datum t) (car t))
-(define (children t) (cdr t))
+(define datum car)
+(define children cdr)
 
 (define ex (make-tree 5
-                      (list (make-tree 7 '(1 3))
-                            (make-tree 2 (list 9
-                                               (make-tree 5 '(3 1)))))))
+                      (list (make-tree 7 (list (make-tree 1 '())
+                                               (make-tree 3 '())))
+                            (make-tree 2 (list (make-tree 9 '())
+                                               (make-tree 5 (list (make-tree 3 '())
+                                                                  (make-tree 1 '()))))))))
 
 (define (biggest l)
   (apply max l))
@@ -18,14 +20,6 @@
 ; Tree -> Number
 (define (maxpath t)
   (cond ((null? (children t)) (datum t))
-        (else (+ (datum t) (maxpath-l (children t))))))
-
-; [List-of Tree] -> Number
-(define (maxpath-l alot)
-  (cond ((null? alot) 0)
-        (else (biggest (map (lambda (x) (if (number? x) x (maxpath x))) alot)))))
+        (else (+ (datum t) (biggest (map maxpath (children t)))))))
 
 (check-equal? (maxpath ex) 16)
-(check-equal? (maxpath (make-tree 5 '(3 1))) 8)
-
-(check-equal? (maxpath-l '(3 1)) 3)
