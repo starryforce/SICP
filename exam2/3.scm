@@ -1,23 +1,22 @@
 #lang simply-scheme
 
-(define (make-point x y)
-  (cons x y))
-(define (point-x p)
-  (car p))
-(define (point-y p)
-  (cdr p))
-
 (define (make-segment start end)
-  (cons 'segment (cons start end)))
-
-(define (start-segment s)
-  (cadr s))
-(define (end-segment s)
-  (cddr s))
+  (tag 'segment (cons start end)))
+(define (start-segment se)
+  (car (content  se)))
+(define (end-segment se)
+  (cdr (content se)))
 
 
 (define (midpoint obj)
-  (let ((type (car obje)))
-    (cond ((eq? 'segment type) ...)
-          ((eq? 'frame type) ...)
-          (else #f))))
+  (let ((type (type-tag obj)))
+    (cond ((eq? type 'segment)
+           (scale-vect 0.5
+                       (add-vect (start-segment obj)
+                                 (end-segment obj)))
+           ((eq? type 'frame)
+            (add-vect (origin-frame obj)
+                      (scale-vect 0.5
+                                  (add-vect (edge1-frame obj)
+                                            (edge2-frame obj)))))
+           (else #f)))))
