@@ -1,7 +1,6 @@
 #lang simply-scheme
 
-(require "obj.rkt")
-(require "adv.scm")
+(require "obj.rkt" "adv.scm")
 
 ;;; To make a labyrinth underneath sproul-plaza, say
 ;;; (instantiate labyrinth sproul-plaza)
@@ -24,12 +23,12 @@
 (define (fancy-move-loop who)
   (newline)
   (let ((things (ask who 'look-around)))
-    (if things
+    (cond (things
 	(begin (print "You see")
 	       (for-each (lambda (thing)
 			   (display thing)
 			   (display " "))
-			 things))))
+			 things)))))
   (newline)
   (print (ask who 'exits))
   (display "?  > ")

@@ -1,7 +1,6 @@
 #lang simply-scheme
 
-(require "obj.rkt")
-(require "adv.scm")
+(require "obj.rkt" "adv.scm")
 
 ;;; small-world.scm
 ;;; Miniature game world for debugging the CS61A adventure game project.

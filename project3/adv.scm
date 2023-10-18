@@ -22,31 +22,31 @@
 	  '()                     ;; nothing in that direction
 	  (cdr pair))))           ;; return the place object
   (method (appear new-thing)
-    (if (memq new-thing things)
-	(error "Thing already in this place" (list name new-thing)))
+    (cond ((memq new-thing things)
+           (error "Thing already in this place" (list name new-thing))))
     (set! things (cons new-thing things))
     'appeared)
   (method (enter new-person)
-    (if (memq new-person people)
-	(error "Person already in this place" (list name new-person)))
+    (cond ((memq new-person people)
+	(error "Person already in this place" (list name new-person))))
     (set! people (cons new-person people))
     (for-each (lambda (proc) (proc)) entry-procs)
     'appeared)
   (method (gone thing)
-    (if (not (memq thing things))
-	(error "Disappearing thing not here" (list name thing)))
+    (cond ((not (memq thing things))
+	(error "Disappearing thing not here" (list name thing))))
     (set! things (delete thing things)) 
     'disappeared)
   (method (exit person)
     (for-each (lambda (proc) (proc)) exit-procs)
-    (if (not (memq person people))
-	(error "Disappearing person not here" (list name person)))
+    (cond ((not (memq person people))
+	(error "Disappearing person not here" (list name person))))
     (set! people (delete person people)) 
     'disappeared)
 
   (method (new-neighbor direction neighbor)
-    (if (assoc direction directions-and-neighbors)
-	(error "Direction already assigned a neighbor" (list name direction)))
+    (cond ((assoc direction directions-and-neighbors)
+	(error "Direction already assigned a neighbor" (list name direction))))
     (set! directions-and-neighbors
 	  (cons (cons direction neighbor) directions-and-neighbors))
     'connected)
@@ -88,11 +88,11 @@
 	   ;; If somebody already has this object...
 	   (for-each
 	    (lambda (pers)
-	      (if (and (not (eq? pers self)) ; ignore myself
+	      (cond ((and (not (eq? pers self)) ; ignore myself
 		       (memq thing (ask pers 'possessions)))
 		  (begin
 		   (ask pers 'lose thing)
-		   (have-fit pers))))
+		   (have-fit pers)))))
 	    (ask place 'people))
 	       
 	   (ask thing 'change-possessor self)
@@ -168,11 +168,11 @@
 			 (and (edible? thing)
 			      (not (eq? (ask thing 'possessor) self))))
 		       (ask (usual 'place) 'things))))
-	  (if (not (null? food-things))
+	  (cond ((not (null? food-things))
 	      (begin
 	       (ask self 'take (car food-things))
 	       (set! behavior 'run)
-	       (ask self 'notice person)) )))) )
+	       (ask self 'notice person))) )))) )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utility procedures
@@ -223,7 +223,7 @@
 
 
 (define (pick-random set)
-  (nth (random (length set)) set))
+  (list-ref (random (length set)) set))
 
 (define (delete thing stuff)
   (cond ((null? stuff) '())
@@ -237,3 +237,5 @@
 (define (thing? obj)
   (and (procedure? obj)
        (eq? (ask obj 'type) 'thing)))
+
+(provide place can-go thing person pick-random thief)

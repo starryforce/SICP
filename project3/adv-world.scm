@@ -1,7 +1,6 @@
 #lang simply-scheme
 
-(require "obj.rkt")
-(require "adv.scm")
+(require "obj.rkt" "adv.scm")
 
 ;;;  Data for adventure game.  This file is adv-world.scm
 
