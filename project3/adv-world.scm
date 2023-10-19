@@ -19,6 +19,10 @@
 (define Noahs (instantiate place 'Noahs))
 (define Intermezzo (instantiate place 'Intermezzo))
 (define s-h (instantiate place 'sproul-hall))
+; Q1-01
+(define Dormitory (instantiate place 'Dormitory))
+; Q1-04
+(define Kirin (instantiate place 'Kirin))
 
 
 (can-go Soda 'up art-gallery)
@@ -26,7 +30,7 @@
 (can-go art-gallery 'west BH-Office)
 (can-go BH-Office 'east art-gallery)
 (can-go art-gallery 'east MJC-Office)
-(can-go MJC-office 'west art-gallery)
+(can-go MJC-Office 'west art-gallery)
 (can-go Soda 'south Pimentel)
 (can-go Pimentel 'north Soda)
 (can-go Pimentel 'south 61A-Lab)
@@ -42,6 +46,13 @@
 (can-go Noahs 'north Telegraph-Ave)
 (can-go Noahs 'south Intermezzo)
 (can-go Intermezzo 'north Noahs)
+; Q1-03
+(can-go Intermezzo 'east Dormitory)
+(can-go Dormitory 'west Intermezzo)
+; Q1-05
+(can-go Soda 'north Kirin)
+(can-go Kirin 'south Soda)
+
 
 ;; Some people.
 ; MOVED above the add-entry-procedure stuff, to avoid the "The computers
@@ -49,8 +60,10 @@
 ; -- Ryan Stejskal
 
 (define Brian (instantiate person 'Brian BH-Office))
-(define hacker (instantiate person 'hacker 61A-lab))
-(define nasty (instantiate thief 'nasty sproul-plaza))
+(define hacker (instantiate person 'hacker MJC-Office))
+(define nasty (instantiate thief 'nasty MJC-Office))
+; Q1-02
+(define Ni (instantiate person 'Ni Dormitory))
 
 (define (sproul-hall-exit)
    (error "You can check out any time you'd like, but you can never leave"))
@@ -85,3 +98,25 @@
 
 (define coffee (instantiate thing 'coffee))
 (ask Intermezzo 'appear coffee)
+
+; Q1-06
+(define potstickers (instantiate thing 'potstickers))
+(ask Kirin 'appear potstickers)
+
+(ask Ni 'go 'west)
+(ask Ni 'go 'north)
+(ask Ni 'go 'north)
+(ask Ni 'go 'north)
+(ask Ni 'go 'north)
+(ask Ni 'go 'north)
+(ask Ni 'go 'north) ; Ni at Kirin
+(ask Ni 'take potstickers)
+(ask Ni 'go 'south)
+(ask Ni 'go 'up)
+(ask Ni 'go 'west) ; Ni at BH-Office where Brian is
+(ask Ni 'lose potstickers)
+(ask Brian 'take potstickers)
+(ask Ni 'go 'east)
+(ask Ni 'go 'down)
+(ask Ni 'go 'south)
+(ask Ni 'go 'south) ; Ni back to lab

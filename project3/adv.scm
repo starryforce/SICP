@@ -238,4 +238,6 @@
   (and (procedure? obj)
        (eq? (ask obj 'type) 'thing)))
 
-(provide place can-go thing person pick-random thief)
+(provide thing place person)
+
+(provide can-go pick-random thief move-loop)
