@@ -19,6 +19,10 @@
 (define Noahs (instantiate place 'Noahs))
 (define Intermezzo (instantiate place 'Intermezzo))
 (define s-h (instantiate place 'sproul-hall))
+; Q1-01
+(define Dormitory (instantiate place 'Dormitory))
+; Q1-04
+(define Kirin (instantiate place 'Kirin))
 
 
 (can-go Soda 'up art-gallery)
@@ -42,6 +46,12 @@
 (can-go Noahs 'north Telegraph-Ave)
 (can-go Noahs 'south Intermezzo)
 (can-go Intermezzo 'north Noahs)
+; Q1-03
+(can-go Intermezzo 'east Dormitory)
+(can-go Dormitory 'west Intermezzo)
+; Q1-05
+(can-go Soda 'north Kirin)
+(can-go Kirin 'south Soda)
 
 
 ;; Some people.
@@ -49,9 +59,11 @@
 ; seem to be down" message that would occur when hacker enters 61a-lab
 ; -- Ryan Stejskal
 
-(define Brian (instantiate person 'Brian BH-Office))
+(define Brian (instantiate person 'Brian Telegraph-Ave))
 (define hacker (instantiate person 'hacker MJC-Office))
 (define nasty (instantiate thief 'nasty MJC-Office))
+; Q1-02
+(define Ni (instantiate person 'Ni Dormitory))
 
 (define (sproul-hall-exit)
    (error "You can check out any time you'd like, but you can never leave"))
@@ -86,3 +98,58 @@
 
 (define coffee (instantiate thing 'coffee))
 (ask Intermezzo 'appear coffee)
+
+; Q1-06
+(define potstickers (instantiate thing 'potstickers))
+(ask Kirin 'appear potstickers)
+
+(can-go Telegraph-Ave 'east (instantiate place 'Peoples-Park))
+(ask Brian 'go 'east)
+
+(define computer (instantiate thing 'Durer))
+
+#|
+2A.  What kind of thing is the value of variable BRIAN?
+A: a dispatch procedure
+
+2B.   List all the messages that a PLACE understands.
+A:
+  - 'appear
+  - methods in place
+
+2C. What is returned by the following expressions and WHY?
+
+> (ask Brian 'place)
+#<procedure:dispatch>
+
+> (let ((where (ask Brian 'place)))
+       (ask where 'name))
+'Peoples-Park
+
+>  (ask Peoples-park 'appear bagel)
+error because we did not define variable Peoples-park
+
+2D.
+ > (eq? (ask Telegraph-Ave 'look-in 'east) (ask Brian 'place))
+   #t
+ > (eq? (ask Brian 'place) 'Peoples-Park)
+   #f
+ > (eq? (ask (ask Brian 'place) 'name) 'Peoples-Park)
+   #t
+
+Which of the following is correct?  Why?
+(ask 61a-lab 'appear computer) is correct
+because it's the reference of that project
+
+What is returned by (computer 'name)?  Why?
+a procedure that will return 'Durer
+
+2F. 
+|#
+
+(define (name obj) (ask obj 'name))
+(define (whereis obj) (name (ask obj 'place)))
+(define (owner obj) (let ((o (ask obj 'possessor)))
+                      (if (person? o)
+                          (name o)
+                          o)))
