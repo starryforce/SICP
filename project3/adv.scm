@@ -26,9 +26,11 @@
            (error "Thing already in this place" (list name new-thing))))
     (set! things (cons new-thing things))
     'appeared)
+  (method (may-enter? p) #t) ; A4b modified
   (method (enter new-person)
     (cond ((memq new-person people)
 	(error "Person already in this place" (list name new-person))))
+    (for-each (lambda (p) (ask p 'notice new-person)) people) ; A4a modified
     (set! people (cons new-person people))
     (for-each (lambda (proc) (proc)) entry-procs)
     'appeared)
@@ -63,6 +65,16 @@
     (set! exit-procs '())
     (set! entry-procs '())
     'cleared) )
+
+; A4b modified start
+(define-class (locked-place name)
+  (parent (place name))
+  (method (type) 'locked-place)
+  (instance-vars (locked #t))
+  (method (may-enter? p) (equal? locked #f))
+  (method (unlock) (set! locked #f)))
+; A4b modified end
+  
 
 (define-class (person name place)
   (instance-vars
@@ -111,6 +123,10 @@
       (cond ((null? new-place)
 	     (error "Can't go" direction))
 	    (else
+             ; A4b modified start
+             (cond ((not (ask new-place 'may-enter? self))
+                    (error "this place if locked")))
+             ; A4b modified end
 	     (ask place 'exit self)
 	     (announce-move name place new-place)
 	     (for-each
@@ -238,7 +254,7 @@
   (and (procedure? obj)
        (eq? (ask obj 'type) 'thing)))
 
-(provide thing place person)
+(provide thing place person locked-place)
 
 (provide can-go pick-random thief move-loop)
 

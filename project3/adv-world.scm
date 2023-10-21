@@ -52,9 +52,17 @@
 (define Brian (instantiate person 'Brian BH-Office))
 (define hacker (instantiate person 'hacker MJC-Office))
 (define nasty (instantiate thief 'nasty MJC-Office))
+(define Ni (instantiate person 'Ni 61A-Lab))
 
+; A3 modify start
 (define (sproul-hall-exit)
-   (error "You can check out any time you'd like, but you can never leave"))
+  (let ((count 0))
+    (lambda ()
+      (if (>= count 3)
+          (set! count 0)
+          (begin (set! count (+ count 1))
+                 (error "You can check out any time you'd like, but you can never leave"))))))
+; A3 modify end
 
 (define (bh-office-exit)
   (print "What's your favorite programming language?")
@@ -66,7 +74,7 @@
 
 (ask s-h 'add-entry-procedure
  (lambda () (print "Miles and miles of students are waiting in line...")))
-(ask s-h 'add-exit-procedure sproul-hall-exit)
+(ask s-h 'add-exit-procedure (sproul-hall-exit)) ; A3 modify
 (ask BH-Office 'add-exit-procedure bh-office-exit)
 (ask Noahs 'add-entry-procedure
  (lambda () (print "Would you like lox with it?")))
@@ -86,3 +94,30 @@
 
 (define coffee (instantiate thing 'coffee))
 (ask Intermezzo 'appear coffee)
+
+; A4a modified start
+(define singer (instantiate person 'rick Sproul-Plaza))
+(ask singer 'set-talk "My funny valentine, sweet comic valentine")
+(define preacher (instantiate person 'preacher Sproul-Plaza))
+(ask preacher 'set-talk "Praise the Lord")
+(define street-person (instantiate person 'harry Telegraph-Ave))
+(ask street-person 'set-talk "Brother, can you spare a buck")
+
+(ask preacher 'go 'south)
+(ask preacher 'go 'north)
+(ask street-person 'go 'north)
+(ask singer 'go 'south)
+(ask street-person 'go 'south)
+(ask street-person 'go 'north)
+; A4a modified end
+
+
+; A4b modified start
+(define Secret-Room (instantiate locked-place 'Secret-Room))
+(can-go 61A-Lab 'east Secret-Room)
+(can-go Secret-Room 'west 61A-Lab)
+(define Breaker (instantiate person 'Breaker 61A-Lab))
+(ask Breaker 'go 'east)
+(ask Secret-Room 'unlock)
+(ask Breaker 'go 'east)
+; A4b modified end
