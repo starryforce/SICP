@@ -1,6 +1,6 @@
 #lang simply-scheme
 
-(require "obj.rkt")
+(require "obj.rkt" "tables.scm")
 
 ;; ADV.SCM
 ;; This file contains the definitions for the objects in the adventure
@@ -74,8 +74,33 @@
   (method (may-enter? p) (equal? locked #f))
   (method (unlock) (set! locked #f)))
 ; A4b modified end
-  
 
+; A5 modified start
+(define-class (garage name)
+  (parent (place name))
+  (instance-vars (record (make-table)))
+  (class-vars (serial-no 0))
+  (method (type) 'garage)
+  (method (park car) (let ((th (ask self 'things))
+                           (owner (ask car 'possessor)))
+                       (if (memq car th)
+                           (begin (insert! serial-no car record)
+                                  (ask owner 'lose car)
+                                  (let ((t (instantiate ticket 'TICKET serial-no)))
+                                    (ask self 'appear t)
+                                    (ask owner 'take t)))
+                           (error "The car is not in the garage"))))
+  (method (unpark ticket)
+          (if (eq? (ask ticket 'name) 'TICKET)
+              (let ((sn (ask ticket 'number))
+                    (r (lookup (ask ticket 'number) record))
+                    (owner (ask ticket 'possessor)))
+                (cond (r (ask owner 'lose ticket)
+                         (ask owner 'take r)
+                         (insert! sn #f record))))
+              (error "This is not a ticket") )))
+; A5 modified end
+  
 (define-class (person name place)
   (instance-vars
    (possessions '())
@@ -137,30 +162,16 @@
 	     (set! place new-place)
 	     (ask new-place 'enter self))))) )
 
-(define thing
-  (let ()
-    (lambda (class-message)
-      (cond
-       ((eq? class-message 'instantiate)
-	(lambda (name)
-	  (let ((self '()) (possessor 'no-one))
-	    (define (dispatch message)
-	      (cond
-	       ((eq? message 'initialize)
-		(lambda (value-for-self)
-		  (set! self value-for-self)))
-	       ((eq? message 'send-usual-to-parent)
-		(error "Can't use USUAL without a parent." 'thing))
-	       ((eq? message 'name) (lambda () name))
-	       ((eq? message 'possessor) (lambda () possessor))
-	       ((eq? message 'type) (lambda () 'thing))
-	       ((eq? message 'change-possessor)
-		(lambda (new-possessor)
-		  (set! possessor new-possessor)))
-	       (else (no-method 'thing))))
-	    dispatch)))
-       (else (error "Bad message to class" class-message))))))
+(define-class (thing name)
+  (instance-vars (possessor 'no-one))
+  (method (type) 'thing)
+  (method (change-possessor new-possessor)
+          (set! possessor new-possessor)))
 
+; A5 modified start
+(define-class (ticket name number)
+  (parent (thing name)))
+; A5 modified end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Implementation of thieves for part two
@@ -254,7 +265,7 @@
   (and (procedure? obj)
        (eq? (ask obj 'type) 'thing)))
 
-(provide thing place person locked-place)
+(provide thing place person locked-place garage)
 
 (provide can-go pick-random thief move-loop)
 

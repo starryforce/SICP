@@ -112,6 +112,7 @@
 ; A4a modified end
 
 
+#|
 ; A4b modified start
 (define Secret-Room (instantiate locked-place 'Secret-Room))
 (can-go 61A-Lab 'east Secret-Room)
@@ -121,3 +122,21 @@
 (ask Secret-Room 'unlock)
 (ask Breaker 'go 'east)
 ; A4b modified end
+|#
+
+; A5 modified start
+(define B1 (instantiate garage 'B1))
+(can-go 61A-Lab 'down B1)
+(can-go B1 'up 61A-Lab)
+
+(define GTR (instantiate thing 'GTR))
+(ask 61A-Lab 'appear GTR)
+(ask Ni 'take GTR)
+(ask Ni 'go 'down)
+(ask B1 'park GTR)
+(ask Ni 'go 'up)
+(ask Ni 'go 'down)
+(ask (car (ask Ni 'possessions)) 'name)
+(ask B1 'unpark (car (ask Ni 'possessions)))
+(ask (car (ask Ni 'possessions)) 'name)
+; A5 modified end
