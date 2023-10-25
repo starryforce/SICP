@@ -1,12 +1,22 @@
 #lang simply-scheme
 
 (require "obj.rkt" "tables.scm")
+(require racket/system)
 
 ;; ADV.SCM
 ;; This file contains the definitions for the objects in the adventure
 ;; game and some utility procedures.
 
+; B4a modified start
+(define-class (basic-object)
+  (instance-vars (properties (make-table)))
+  (method (type) 'basic-object)
+  (method (put k v) (insert! k v properties))
+  (default-method (lookup message properties)))
+; B4a modified end
+
 (define-class (place name)
+  (parent (basic-object)) ; B4a modified
   (instance-vars
    (directions-and-neighbors '())
    (things '())
@@ -14,6 +24,7 @@
    (entry-procs '())
    (exit-procs '()))
   (method (type) 'place)
+  (method (place?) #t) ; B4b modified
   (method (neighbors) (map cdr directions-and-neighbors))
   (method (exits) (map car directions-and-neighbors))
   (method (look-in direction)
@@ -75,6 +86,24 @@
   (method (unlock) (set! locked #f)))
 ; A4b modified end
 
+; B5 modified start
+(define-class (hotspot name password)
+  (parent (place name))
+  (instance-vars (clist '()))
+  (method (connect laptop pwd)
+          (if (and (memq laptop (ask self 'things))
+                   (eq? password pwd))
+              (begin (set! clist (cons laptop clist))
+                     (let ((clear-proc (lambda () (delete laptop clist))))
+                       ; todo clear exit procedure
+                       (usual 'add-exit-procedure clear-proc)))
+              (error "Password is not correct!")))
+  (method (surf laptop url)
+          (if (memq laptop clist)
+              (system (string-append "lynx " url))
+              (error "not connected"))))
+              
+
 ; A5 modified start
 (define-class (garage name)
   (parent (place name))
@@ -102,12 +131,15 @@
 ; A5 modified end
   
 (define-class (person name place)
+  (parent (basic-object)) ; B4a modified
   (instance-vars
    (possessions '())
    (saying ""))
   (initialize
-   (ask place 'enter self))
+   (begin (ask self 'put 'strength 50) ; B4a modified
+          (ask place 'enter self))) ; B4a modified
   (method (type) 'person)
+  (method (person?) #t) ; B4b modified
   (method (look-around)
     (map (lambda (obj) (ask obj 'name))
 	 (filter (lambda (thing) (not (eq? thing self)))
@@ -134,6 +166,13 @@
 	       
 	   (ask thing 'change-possessor self)
 	   'taken)))
+  ; B3 modified start
+  (method (take-all)
+          (for-each (lambda (t)
+                      (cond ((eq? 'no-one (ask t 'possessor))
+                             (ask self 'take t))))
+                    (ask place 'things)))
+  ; B3 modified end
 
   (method (lose thing)
     (set! possessions (delete thing possessions))
@@ -163,8 +202,10 @@
 	     (ask new-place 'enter self))))) )
 
 (define-class (thing name)
+  (parent (basic-object)) ; B4a modified
   (instance-vars (possessor 'no-one))
   (method (type) 'thing)
+  (method (thing?) #t) ; B4b modified
   (method (change-possessor new-possessor)
           (set! possessor new-possessor)))
 
@@ -172,6 +213,19 @@
 (define-class (ticket name number)
   (parent (thing name)))
 ; A5 modified end
+
+
+(define-class (laptop name)
+  (parent (thing name))
+  (method (connect pwd)
+          (let ((owner (ask self 'possessor)))
+            (let ((w (ask owner 'place)))
+              (ask w 'connect pwd))))
+  (method (surf txt)
+          (let ((owner (ask self 'possessor)))
+            (let ((w (ask owner 'place)))
+              (ask w 'surf txt)))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Implementation of thieves for part two
@@ -257,16 +311,36 @@
 	((eq? thing (car stuff)) (cdr stuff))
 	(else (cons (car stuff) (delete thing (cdr stuff)))) ))
 
+; B4b modified start
+(define (place? obj)
+  (and (procedure? obj)
+       (ask obj 'place?)))
+
 (define (person? obj)
   (and (procedure? obj)
-       (member? (ask obj 'type) '(person police thief))))
+       (ask obj 'person?)))
 
 (define (thing? obj)
   (and (procedure? obj)
-       (eq? (ask obj 'type) 'thing)))
+       (ask obj 'thing?)))
+; B4b modified end
+
+(define (inventory person)
+  (map (lambda (t) (ask t 'name))
+       (ask person 'possessions)))
+
+(define (name obj) (ask obj 'name))
+(define (whereis obj) (name (ask obj 'place)))
+(define (owner obj) (let ((o (ask obj 'possessor)))
+                      (if (person? o)
+                          (name o)
+                          o)))
+
 
 (provide thing place person locked-place garage)
 
 (provide can-go pick-random thief move-loop)
 
-(provide person?)
+(provide place? person? thing?)
+
+(provide name whereis owner inventory)

@@ -140,3 +140,22 @@
 (ask B1 'unpark (car (ask Ni 'possessions)))
 (ask (car (ask Ni 'possessions)) 'name)
 ; A5 modified end
+
+; B3 modified start
+(define Pig (instantiate thing 'Pig))
+(ask B1 'appear Pig)
+(define Cat (instantiate thing 'Cat))
+(ask B1 'appear Cat)
+(define Dog (instantiate thing 'Dog))
+(ask B1 'appear Dog)
+(define Fang (instantiate person 'Fang B1))
+(ask Ni 'take Pig)
+(ask Fang 'take-all)
+; B3 modified end
+
+; B4a modifed start
+(ask Ni 'strength)
+(ask Ni 'put 'strength 100)
+(ask Ni 'strength)
+(ask Ni 'stre)
+; B4a modifed end
