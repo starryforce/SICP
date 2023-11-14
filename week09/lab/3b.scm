@@ -4,9 +4,10 @@
 
 (define list2 (list (list 'x) 'y))
 
-(set-cdr! (car list1) (list 'x 'b))
+(set-cdr! (car list2) (cdr list1))
 
-(set-cdr! (car list2) (list 'b))
+(set-cdr! (car list1) (car list2))
+
 
 
 ; '((a x b) y)
