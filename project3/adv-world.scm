@@ -89,8 +89,10 @@
 
 ;; Some things.
 
-(define bagel (instantiate thing 'bagel))
-(ask Noahs 'appear bagel)
+; B6 modified start
+(define Food1 (instantiate bagel 'Food1 200))
+(ask Noahs 'appear Food1)
+; B6 modified end
 
 (define coffee (instantiate thing 'coffee))
 (ask Intermezzo 'appear coffee)
@@ -159,3 +161,18 @@
 (ask Ni 'strength)
 (ask Ni 'stre)
 ; B4a modifed end
+
+; A6a start
+(define Jail (instantiate place 'Jail))
+(ask Ni 'go-directly-to Jail) 
+; A6a end
+
+; B6 modified start
+(define Food2 (instantiate food 'Food2 500))
+(define Food3 (instantiate bagel 'Food3 110))
+(ask Jail 'appear Food2)
+(ask Jail 'appear Food3)
+(ask Ni 'take Food2)
+(ask Ni 'take Food3)
+(ask Ni 'eat)
+; B6 modified end

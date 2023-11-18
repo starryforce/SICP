@@ -144,6 +144,17 @@
     (map (lambda (obj) (ask obj 'name))
 	 (filter (lambda (thing) (not (eq? thing self)))
 		 (append (ask place 'things) (ask place 'people)))))
+  ; B6 modified start
+  (method (eat)
+          (let ((foods (filter (lambda (i) (edible? i)) possessions)))
+            (for-each (lambda (food)
+                        (let ((cal (ask food 'calories))
+                              (strength (ask self 'strength)))
+                          (ask self 'put 'strength (+ cal strength))
+                          (ask self 'lose food)
+                          (ask place 'gone food)))
+                      foods)))
+   ; B6 modified end
   (method (take thing)
     (cond ((not (thing? thing)) (error "Not a thing" thing))
 	  ((not (memq thing (ask place 'things)))
@@ -199,8 +210,23 @@
 		(ask new-place 'appear p))
 	      possessions)
 	     (set! place new-place)
-	     (ask new-place 'enter self))))) )
-
+	     (ask new-place 'enter self)))))
+  ; A6a start
+  (method (go-directly-to new-place)
+          (cond ((not (ask new-place 'may-enter? self))
+                 (error "this place if locked")))
+          (ask place 'exit self)
+          (announce-move name place new-place)
+          (for-each
+           (lambda (p)
+             (ask place 'gone p)
+             (ask new-place 'appear p))
+           possessions)
+          (set! place new-place)
+          (ask new-place 'enter self))
+  ; A6a end
+  )
+     
 (define-class (thing name)
   (parent (basic-object)) ; B4a modified
   (instance-vars (possessor 'no-one))
@@ -208,6 +234,17 @@
   (method (thing?) #t) ; B4b modified
   (method (change-possessor new-possessor)
           (set! possessor new-possessor)))
+
+; B6 modified start
+(define-class (food name calo)
+  (parent (thing name))
+  (initialize (begin (ask self 'put 'edible? #t)
+                     (ask self 'put 'calories calo))))
+
+(define-class (bagel name calo)
+  (class-vars (name 'bagel))
+  (parent (food name calo)))
+; B6 modified end
 
 ; A5 modified start
 (define-class (ticket name number)
@@ -232,8 +269,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define *foods* '(pizza potstickers coffee))
 
+; B6 modified start
 (define (edible? thing)
-  (member? (ask thing 'name) *foods*))
+  (ask thing 'edible?))
+; B6 modified end
 
 (define-class (thief name initial-place)
   (parent (person name initial-place))
@@ -243,7 +282,12 @@
 
   (method (notice person)
     (if (eq? behavior 'run)
-	(ask self 'go (pick-random (ask (usual 'place) 'exits)))
+        ; A6b start
+        (let ((exits (ask (usual 'place) 'exits)))
+          (if (null? exits)
+              'donothing
+              (ask self 'go (pick-random exits))))
+        ; A6b end
 	(let ((food-things
 	       (filter (lambda (thing)
 			 (and (edible? thing)
@@ -337,10 +381,12 @@
                           o)))
 
 
-(provide thing place person locked-place garage)
+(provide thing place person locked-place garage food bagel)
 
 (provide can-go pick-random thief move-loop)
 
 (provide place? person? thing?)
+
+(provide edible?)
 
 (provide name whereis owner inventory)
