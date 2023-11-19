@@ -16,7 +16,7 @@
 (define 61A-Lab (instantiate place '61A-Lab))
 (define Sproul-Plaza (instantiate place 'Sproul-Plaza))
 (define Telegraph-Ave (instantiate place 'Telegraph-Ave))
-(define Noahs (instantiate place 'Noahs))
+(define Noahs (instantiate restaurant 'Noahs bagel 15)) ; A7b modified
 (define Intermezzo (instantiate place 'Intermezzo))
 (define s-h (instantiate place 'sproul-hall))
 
@@ -90,7 +90,7 @@
 ;; Some things.
 
 ; B6 modified start
-(define Food1 (instantiate bagel 'Food1 200))
+(define Food1 (instantiate bagel))
 (ask Noahs 'appear Food1)
 ; B6 modified end
 
@@ -169,10 +169,19 @@
 
 ; B6 modified start
 (define Food2 (instantiate food 'Food2 500))
-(define Food3 (instantiate bagel 'Food3 110))
+(define Food3 (instantiate bagel))
 (ask Jail 'appear Food2)
 (ask Jail 'appear Food3)
 (ask Ni 'take Food2)
 (ask Ni 'take Food3)
 (ask Ni 'eat)
 ; B6 modified end
+
+; A8 modified start
+(ask Ni 'go-directly-to Noahs)
+(ask Ni 'buy 'bagel)
+; A8 modified end
+
+(define Police1 (instantiate police 'Police1 art-gallery Jail))
+(ask Ni 'go-directly-to art-gallery)
+(ask Ni 'go 'east)
