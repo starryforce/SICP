@@ -102,6 +102,21 @@
           (if (memq laptop clist)
               (system (string-append "lynx " url))
               (error "not connected"))))
+
+; A7b modified start
+(define-class (restaurant name food price)
+  (parent (place name))
+  (method (menu)
+          (list (ask food 'name) price))
+  (method (sell p f)
+          (if (eq? f (ask food 'name))
+              (if (eq? (ask p 'type) 'police)
+                  (instantiate food)
+                  (if (ask p 'pay-money price)
+                      (instantiate food)
+                      #f))
+              #f)))
+; A7b modified end
               
 
 ; A5 modified start
@@ -136,7 +151,8 @@
    (possessions '())
    (saying ""))
   (initialize
-   (begin (ask self 'put 'strength 50) ; B4a modified
+   (begin (ask self 'put 'money 100) ; A7a modified
+          (ask self 'put 'strength 50) ; B4a modified
           (ask place 'enter self))) ; B4a modified
   (method (type) 'person)
   (method (person?) #t) ; B4b modified
@@ -144,6 +160,37 @@
     (map (lambda (obj) (ask obj 'name))
 	 (filter (lambda (thing) (not (eq? thing self)))
 		 (append (ask place 'things) (ask place 'people)))))
+  ; B6 modified start
+  (method (eat)
+          (let ((foods (filter (lambda (i) (edible? i)) possessions)))
+            (for-each (lambda (food)
+                        (let ((cal (ask food 'calories))
+                              (strength (ask self 'strength)))
+                          (ask self 'put 'strength (+ cal strength))
+                          (ask self 'lose food)
+                          (ask place 'gone food)))
+                      foods)))
+  ; B6 modified end
+  (method (buy foodname)
+          (let ((result (ask place 'sell self foodname)))
+            (if result
+                (begin (ask place 'appear result)
+                       (ask self 'take result))
+                (error "failed to buy"))))
+  ; A7a modified start
+  (method (get-money v)
+          (if (> v 0)
+              (ask self 'put 'money (+ (ask self 'money) v))
+              (error "Incorrect money quantity")))
+  (method (pay-money v)
+          (if (> v 0)
+              (let ((assets (ask self 'money)))
+                (if (< assets v)
+                    #f
+                    (begin (ask self 'put 'money (- assets v))
+                           #t)))
+              (error "Incorrect money quantity")))
+  ; A7a modified end     
   (method (take thing)
     (cond ((not (thing? thing)) (error "Not a thing" thing))
 	  ((not (memq thing (ask place 'things)))
@@ -151,21 +198,26 @@
 		  (list (ask place 'name) thing)))
 	  ((memq thing possessions) (error "You already have it!"))
 	  (else
-	   (announce-take name thing)
-	   (set! possessions (cons thing possessions))
+           ; B8 modified start
+           (if (or (eq? 'no-one (ask thing 'possessor))
+                   (ask thing 'may-take? self))
+               (begin 
+                 (announce-take name thing)
+                 (set! possessions (cons thing possessions))
+                 ;; If somebody already has this object...
+                 (for-each
+                  (lambda (pers)
+                    (cond ((and (not (eq? pers self)) ; ignore myself
+                                (memq thing (ask pers 'possessions)))
+                           (begin
+                             (ask pers 'lose thing)
+                             (have-fit pers)))))
+                  (ask place 'people))
 	       
-	   ;; If somebody already has this object...
-	   (for-each
-	    (lambda (pers)
-	      (cond ((and (not (eq? pers self)) ; ignore myself
-		       (memq thing (ask pers 'possessions)))
-		  (begin
-		   (ask pers 'lose thing)
-		   (have-fit pers)))))
-	    (ask place 'people))
-	       
-	   (ask thing 'change-possessor self)
-	   'taken)))
+                 (ask thing 'change-possessor self)
+                 'taken)
+               'failed))))
+           ; B8 modified end
   ; B3 modified start
   (method (take-all)
           (for-each (lambda (t)
@@ -199,15 +251,63 @@
 		(ask new-place 'appear p))
 	      possessions)
 	     (set! place new-place)
-	     (ask new-place 'enter self))))) )
+	     (ask new-place 'enter self)))))
+  ; A6a start
+  (method (go-directly-to new-place)
+          (cond ((not (ask new-place 'may-enter? self))
+                 (error "this place if locked")))
+          (ask place 'exit self)
+          (announce-move name place new-place)
+          (for-each
+           (lambda (p)
+             (ask place 'gone p)
+             (ask new-place 'appear p))
+           possessions)
+          (set! place new-place)
+          (ask new-place 'enter self))
+  ; A6a end
+  )
 
+(define-class (police name place target)
+  (parent (person name place))
+  (initialize (ask self 'put 'strength 200))
+  (method (type) 'police)
+  (method (notice person)
+          (if (thief? person)
+              (begin (ask self 'set-talk "Crime Does Not Pay")
+                     (ask self 'talk)
+                     (let ((things (ask person 'possessions)))
+                       (for-each (lambda (t) (ask person 'lose t)
+                                   (ask self 'take t))
+                                 things))
+                     ; (ask person 'go-directly-to target)
+                     )
+              (ask self 'talk))))
+     
 (define-class (thing name)
   (parent (basic-object)) ; B4a modified
   (instance-vars (possessor 'no-one))
   (method (type) 'thing)
   (method (thing?) #t) ; B4b modified
+  ; B8 modified start
+  (method (may-take? receiver)
+          (let ((owner-s (ask possessor 'strength))
+                (receiver-s (ask receiver 'strength)))
+            (if (> receiver-s owner-s) self #f)))
+  ; B8 modified end
   (method (change-possessor new-possessor)
           (set! possessor new-possessor)))
+
+; B6 modified start
+(define-class (food name calo)
+  (parent (thing name))
+  (initialize (begin (ask self 'put 'edible? #t)
+                     (ask self 'put 'calories calo))))
+
+(define-class (bagel)
+  (class-vars (name 'bagel))
+  (parent (food 'bagel 200)))
+; B6 modified end
 
 ; A5 modified start
 (define-class (ticket name number)
@@ -232,18 +332,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define *foods* '(pizza potstickers coffee))
 
+; B6 modified start
 (define (edible? thing)
-  (member? (ask thing 'name) *foods*))
+  (ask thing 'edible?))
+; B6 modified end
 
 (define-class (thief name initial-place)
   (parent (person name initial-place))
   (instance-vars
    (behavior 'steal))
+  (initialize (ask self 'put 'strength 100))
   (method (type) 'thief)
-
+  (method (thief?) #t) ; B7 modified
   (method (notice person)
     (if (eq? behavior 'run)
-	(ask self 'go (pick-random (ask (usual 'place) 'exits)))
+        ; A6b start
+        (let ((exits (ask (usual 'place) 'exits)))
+          (if (null? exits)
+              'donothing
+              (ask self 'go (pick-random exits))))
+        ; A6b end
 	(let ((food-things
 	       (filter (lambda (thing)
 			 (and (edible? thing)
@@ -304,7 +412,7 @@
 
 
 (define (pick-random set)
-  (list-ref (random (length set)) set))
+  (list-ref set (random (length set))))
 
 (define (delete thing stuff)
   (cond ((null? stuff) '())
@@ -319,6 +427,10 @@
 (define (person? obj)
   (and (procedure? obj)
        (ask obj 'person?)))
+
+(define (thief? obj)
+  (and (procedure? obj)
+       (ask obj 'thief?)))
 
 (define (thing? obj)
   (and (procedure? obj)
@@ -335,12 +447,15 @@
                       (if (person? o)
                           (name o)
                           o)))
+(define (whoisat obj) (map (lambda (i) (ask i 'name))(ask obj 'people)))
 
 
-(provide thing place person locked-place garage)
+(provide thing place person locked-place garage food bagel restaurant police)
 
 (provide can-go pick-random thief move-loop)
 
 (provide place? person? thing?)
 
-(provide name whereis owner inventory)
+(provide edible?)
+
+(provide name whereis owner inventory whoisat)
