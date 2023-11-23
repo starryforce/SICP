@@ -1,3 +1,5 @@
+#lang simply-scheme
+
 ;NOTES:
 ;Read NOTES in server.scm:
 ;   Notes that apply to both server.scm and this file will be kept in 
@@ -29,7 +31,7 @@
   ;Send "thanks" command.
   ;Set thunk for socket.
   ;
-  (if socket-to-server (error "Already logged in!"))
+  (if socket-to-server (error "Already logged in!") 'ok)
   (set! socket-to-server (make-client-socket server-address port))
   (set! port-to-server (socket-output socket-to-server))
   (set! port-from-server (socket-input socket-to-server))

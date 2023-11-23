@@ -1,3 +1,5 @@
+#lang simply-scheme
+
 #| Common code between the client and server
 
  WARNING: requests cannot contain invalid read characters.

@@ -1,3 +1,7 @@
+#lang simply-scheme
+
+(require r5rs)
+
 ;DEAL WITH:
 ;   EMPTY
 
