@@ -2,4 +2,8 @@
 
 (#%require srfi/41)
 
-(define ones (stream-cons 1 ones))
+(define (integers-starting-from n)
+  (stream-cons
+   n (integers-starting-from (+ n 1))))
+
+(define integers (integers-starting-from 1))
