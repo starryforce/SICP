@@ -1,6 +1,7 @@
 #lang sicp
 
 (#%require srfi/41)
+(#%require "util.scm")
 
 (define ones (stream-cons 1 ones))
 
@@ -16,8 +17,4 @@
                  (add-streams result (stream-cdr s))))
   result)
 
-(stream-ref (partial-nums integers) 0)
-(stream-ref (partial-nums integers) 1)
-(stream-ref (partial-nums integers) 2)
-(stream-ref (partial-nums integers) 3)
-(stream-ref (partial-nums integers) 4)
+(show-stream (partial-nums integers) 10)
