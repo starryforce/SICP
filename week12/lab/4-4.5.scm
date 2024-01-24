@@ -38,12 +38,11 @@
                        clauses))
             (if (clause-additional? first)
                 (make-if (cond-predicate-additional first)
-                     (sequence->exp 
-                      (cond-actions first))
-                     (expand-clauses 
-                      rest))
+                         ((cond-actions-additional first) (cond-predicate-additional first))
+                         (expand-clauses 
+                          rest))
                 (make-if (cond-predicate first)
-                     (sequence->exp 
-                      (cond-actions first))
-                     (expand-clauses 
-                      rest)))))))
+                         (sequence->exp 
+                          (cond-actions first))
+                         (expand-clauses 
+                          rest)))))))
