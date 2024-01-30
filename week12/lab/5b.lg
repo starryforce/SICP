@@ -1,0 +1,14 @@
+#|
+? to hello
+> print se :global [Good Morning]
+> end
+hello defined
+? hello
+Mary Good Morning
+? to dy :global
+> hello
+> end
+dy defined
+? dy "Nancy
+Nancy Good Morning
+|#
