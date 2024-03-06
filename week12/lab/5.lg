@@ -1,0 +1,61 @@
+to bass1
+output [johnny cymbal]
+end
+
+to countdown :num
+if :num=0 [print "blastoff stop]
+print :num
+countdown :num-1
+end
+
+to describe :person
+print se :person :sent
+end
+
+to downup :word
+print :word
+if emptyp bl :word [stop]
+downup bl :word
+print :word
+end
+
+to dy :global
+hello
+end
+
+to greet "person
+say [how are you,]
+end
+
+to hello
+print se :global [Good Morning]
+end
+
+to pr2nd :thing
+print first bf :thing
+end
+
+to say :saying
+print sentence :saying :person
+end
+
+to second :stuff
+output first bf :stuff
+end
+
+to tree :size
+if :size < 3 [stop]
+fd :size/2
+lt 30 tree :size*3/4 rt 30
+fd :size/3
+rt 45 tree :size*2/3 lt 45
+fd :size/6
+bk :size
+end
+
+to who :sent
+foreach [pete roger john keith] "describe
+end
+
+Make "bass "paul
+Make "global "Mary

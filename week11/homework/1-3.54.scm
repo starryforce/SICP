@@ -1,6 +1,7 @@
 #lang sicp
 
 (#%require srfi/41)
+(#%require "util.scm")
 
 (define ones (stream-cons 1 ones))
 
@@ -16,10 +17,4 @@
 (define factorials 
   (stream-cons 1 (mul-streams factorials (stream-cdr integers))))
 
-(stream-ref factorials 0)
-(stream-ref factorials 1)
-(stream-ref factorials 2)
-(stream-ref factorials 3)
-(stream-ref factorials 4)
-(stream-ref factorials 5)
-(stream-ref factorials 6)
+(show-stream factorials 10)
