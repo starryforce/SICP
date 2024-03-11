@@ -12,8 +12,8 @@
 |#
 
 (define (let->combination exp)
-  ((make-lambda (map car (cadr exp)) (cddr exp))
-   (map cadr (cadr exp))))
+  (cons (make-lambda (let-formals exp) (let-body exp))
+        (let-actuals exp)))
 
 
 ...
@@ -23,3 +23,10 @@
 
 (define (let? exp)
   (tagged-list? exp 'let))
+
+(define (let-formals exp)
+  (map car (cadr exp)))
+(define (let-actuals exp)
+  (map cadr (cadr exp)))
+(define (let-body exp)
+  (cddr exp))
