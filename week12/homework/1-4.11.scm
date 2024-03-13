@@ -10,5 +10,11 @@
 
 (define (lookup-variable-value var env)
   (define (env-loop env)
+    (define (scan vars vals)
+      ...)
+    (if (eq? env the-empty-environment)
+        (error "Unbound variable" var)
+        (let ((frame (first-frame env)))
+          (scan 
     ...)
   (env-loop env))
