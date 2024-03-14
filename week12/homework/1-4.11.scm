@@ -1,7 +1,7 @@
 #lang sicp
 
 (define (make-frame variables values)
-  (map (lambda (var val) (cons var val)) variables values))
+  (map cons variables values))
 
 (define (frame-variables frame) (map car frame))
 (define (frame-values frame) (map cdr frame))
@@ -10,11 +10,41 @@
 
 (define (lookup-variable-value var env)
   (define (env-loop env)
-    (define (scan vars vals)
-      ...)
+    (define (scan pairs)
+      (cond ((null? pairs)
+             (env-loop
+              enclosing-environment env))
+            ((eq? var (caar pairs))
+             (cdar pairs))
+            (else (scan (cdr pairs)))))
     (if (eq? env the-empty-environment)
         (error "Unbound variable" var)
         (let ((frame (first-frame env)))
-          (scan 
-    ...)
+          (scan frame))))
   (env-loop env))
+
+(define (set-variable-value! var val env)
+  (define (env-loop env)
+    (define (scan pairs)
+      (cond ((null? pairs)
+             (env-loop
+              (enclosing-environment env)))
+            ((eq? var (caar pairs)
+            (set-cdr! (car pairs) val)))
+            (else (scan (cdr pairs)))))
+    (if (eq? env the-empty-environment)
+        (error "Unbound variable: SET!" var)
+        (let ((frame (first-frame env)))
+          (scan frame))))
+  (env-loop env))
+
+(define (define-variable! var val env)
+  (let ((frame (first-frame env)))
+    (define (scan pairs)
+      (cond ((null? pairs)
+             (add-binding-to-frame! 
+              var val frame))
+            ((eq? var (caar pairs))
+             (set-cdr! (car pairs) val))
+            (else (scan (cdr pairs)))))
+    (scan frame)))
