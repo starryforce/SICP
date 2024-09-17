@@ -6,8 +6,9 @@
 
 ; Pattern Directory -> [Stream [Pair String String]]
 (define (search pattern dir)
-  (mapreduce ))
-
-
-(define (mapper item)
-  (... (kv-))
+  (mapreduce (lambda (item) (if (match? pattern (kv-value item))
+                                (list item)
+                                '()))
+             cons
+             '()
+             "/gutenberg/shakespeare"))
